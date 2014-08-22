@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Signup/Login</title>
+      <style>
+          body {
+              font: 200 1em 'Helvetica Neue';
+              padding: 3em;
+          }
+          input[type] {
+              font: 200 1em 'Helvetica Neue';
+              outline: none;
+              border: 1px solid gray;
+              padding: 0.35em 0.55em;
+              display: block;
+              margin: 0.25em;
+          }
+          input[type="submit"]{
+              cursor: pointer;
+              padding: 0.15em 0.55em;
+          }
+          div#username {
+            display: inline-block;float: right;
+            background-color: #eee;
+              padding: 0.25em 0.5em;
+          }
+      </style>
+      <script>
+          document.addEventListener('DOMContentLoaded', function () {
+             // listen to the submit event
+             // post the data using an ajax call
+
+              document.forms.frm_signup.addEventListener('submit', function (event) {
+                  event.preventDefault();
+                  var userObj = {
+                      username: this.username.value,
+                      email: this.email.value,
+                      password: this.password.value
+                  };
+
+                 var xhr = new XMLHttpRequest();
+                 xhr.open('POST', '/users');
+                 xhr.setRequestHeader('Content-Type', 'application/json');
+                 xhr.setRequestHeader('accept', 'application/json');
+                 xhr.addEventListener('readystatechange', function () {
+                     if( xhr.readyState === 4 ) {
+
+                         switch (xhr.status) {
+                             case 200:
+                                 var obj = JSON.parse(xhr.responseText);
+                                 console.log(obj);
+                                 document.forms.frm_signup.style.display = 'none';
+                                 document.getElementById('username').innerHTML = obj.name;
+                                 break;
+                             case 404:
+                                 try {
+                                    var obj = JSON.parse(xhr.responseText);
+                                    console.log(obj);
+                                  } catch (e) {
+                                    console.log(xhr.responseText);
+                                  }
+                                 //console.log('user exists!');
+                                 break;
+                             default:
+                                 console.log('some other error');
+                                 break;
+                         }
+                     }
+                 });
+                 xhr.send(JSON.stringify(userObj));
+              });
+
+
+          });
+      </script>
+  </head>
+  <body>
+    <div id="username"></div>
+    <h1>Signup</h1>
+
+    <form name="frm_signup">
+        <input type="text" name="username" placeholder="username ... "/>
+        <input type="text" name="email" placeholder="email ... "/>
+        <input type="password" name="password" placeholder="password ... "/>
+        <input type="submit" value="Create Account"/>
+    </form>
+  </body>
+</html>
