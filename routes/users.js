@@ -31,22 +31,23 @@ function authorize(req, res, next){
 router.post('/', checkExisting, function (req, res) {
     arr_users.push(req.body);
     // create a session for the user
-    sessions[uuid.v4()] = {
+    var sessionid = uuid.v4();
+    sessions[sessionid] = {
         userid: arr_users.length - 1,
         timestamp: new Date()
     };
-    res.cookie('sessionid', sessions.length - 1);
+    res.cookie('sessionid', sessionid);
     res.json(200, { name: req.body.username});
     console.log(sessions);
 });
 
 router.get('/account', authorize, function (req, res){
-
+    console.log(req.user);
     res.render('accounts', req.user);
 
 });
 
-router.get('/sensitive', authorize, function (){
+router.get('/sensitive', authorize, function (req, res){
     res.json(200, 'This data is only visible to authenticated users ... ');
 });
 
